@@ -9,15 +9,18 @@ import { RecipeDetialInfo } from '../components/RecipeDetail/RecipeDetailInfo';
 import { RecipeDetailDirections } from '../components/RecipeDetail/RecipeDetailDirections';
 import { RecipeDetailControls } from '../components/RecipeDetail/RecipeDetailControls';
 import { RecipeDetailNavigation } from '../components/RecipeDetail/RecipeDetailNavigation';
+import NotFoundPage from './NotFoundPage';
 
 export default function RecipeDetailPage() {
   const navigate = useNavigate();
   const context = useContext(AppContext);
 
+
   const { slug } = useParams();
   const [recipeDetails, setRecipeDetails] = useState({});
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState()
+ 
   const { title, _id } = recipeDetails;
 
   useEffect(() => {
@@ -25,9 +28,9 @@ export default function RecipeDetailPage() {
       .get(`/recipes/${slug}`)
       .then((response) => {
         setRecipeDetails(response.data);
-        setLoading(false);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => setError(error))
+      .finally(setLoading(false))
   }, [slug]);
 
   const handleDeleteRecipe = () => {
@@ -44,6 +47,7 @@ export default function RecipeDetailPage() {
   };
 
   return (
+    error ? <NotFoundPage /> : 
     <Container>
       <RecipeDetailNavigation title={title} />
 
